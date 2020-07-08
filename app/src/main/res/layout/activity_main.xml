@@ -7,11 +7,21 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+   <ImageView
+       android:layout_gravity="center"
+       android:id="@+id/imageView"
+       android:layout_width="300dp"
+       android:layout_height="300dp"
+       android:layout_marginTop="84dp"
+       android:layout_marginBottom="82dp"
+       android:src="@drawable/ic_launcher_background" />
+
    <Button
-       android:id="@+id/btnSelfie"
-       android:layout_width="match_parent"
+       android:id="@+id/button"
+       android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-       android:layout_margin="20dp"
-       android:text="Selfie Camera"/>
+       android:layout_gravity="center"
+       android:text="Capture"
+        />
 
 </LinearLayout>
