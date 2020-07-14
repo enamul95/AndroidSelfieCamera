@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Fotoapparat">
+    tools:context=".FotoapparatSelfi">
 
     <ImageView
         android:layout_gravity="center"
@@ -23,13 +23,24 @@
         android:layout_gravity="center"
         android:text="Capture"
         />
-    <io.fotoapparat.view.CameraView
-        android:id="@+id/cameraView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp"
-        tools:visibility="visible"/>
+        android:layout_height="match_parent">
+        <io.fotoapparat.view.CameraView
+            android:id="@+id/cameraView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="8dp"
+            tools:visibility="visible"/>
+        <Button
+            android:visibility="gone"
+            android:layout_gravity="bottom|center"
+            android:text="Capture"
+            android:id="@+id/captureBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </FrameLayout>
 
 </LinearLayout>
