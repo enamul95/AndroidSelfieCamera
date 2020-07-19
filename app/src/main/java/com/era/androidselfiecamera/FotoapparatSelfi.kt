@@ -4,11 +4,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -25,6 +27,7 @@ class FotoapparatSelfi : AppCompatActivity() {
     private lateinit var fotoapparat: Fotoapparat
     private lateinit var imageView: ImageView
     private var activeCamera: Camera = Camera.Front
+    var cameraStatus : CameraState? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +36,7 @@ class FotoapparatSelfi : AppCompatActivity() {
 
         imageView = findViewById(R.id.imageView)
         buttonPhoto.isEnabled = false
+        toolbar.setTitle("Selfi Camera")
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),111)
@@ -43,9 +47,15 @@ class FotoapparatSelfi : AppCompatActivity() {
         buttonPhoto.setOnClickListener {
             buttonPhoto.visibility = View.GONE
             imageView.visibility = View.GONE
+            toolbar.visibility = View.GONE
             cameraView.visibility = View.VISIBLE
             captureBtn.visibility = View.VISIBLE
+            cameraLayout.visibility = View.VISIBLE
             fotoapparat.start()
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+            // Remember that you should never show the action bar if the
+            // status bar is hidden, so hide that too if necessary.
+            actionBar?.hide()
         }
         fotoapparat = Fotoapparat(
             context = this,
@@ -56,18 +66,16 @@ class FotoapparatSelfi : AppCompatActivity() {
             cameraConfiguration = activeCamera.configuration
         )
 
+        switchCamera.setOnClickListener {
+            switchCamera()
+        }
+
         captureBtn.setOnClickListener {
            var photoResult = fotoapparat.takePicture()
-//            Bitmap result = photoResult.toBitmap().await()
-//            imageView.setImageBitmap(result)
 
 
                .toBitmap(scaled(scaleFactor = 0.10f))
 
-//            Toast.makeText(this,photoResult,Toast.LENGTH_SHORT).show()
-//            val imageBytes = Base64.decode(photoResult, 0)
-//            val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-//            imageView.setImageBitmap(photoResult)
 
                .whenAvailable { photo ->
                    photo
@@ -83,8 +91,10 @@ class FotoapparatSelfi : AppCompatActivity() {
                }
             buttonPhoto.visibility = View.VISIBLE
             imageView.visibility = View.VISIBLE
+            toolbar.visibility = View.VISIBLE
             cameraView.visibility = View.GONE
             captureBtn.visibility = View.GONE
+            cameraLayout.visibility = View.GONE
             //fotoapparat.stop()
         }
 
@@ -104,8 +114,22 @@ class FotoapparatSelfi : AppCompatActivity() {
             buttonPhoto.isEnabled = true;
         }
     }
+
+    private fun switchCamera() {
+        fotoapparat?.switchTo(
+            lensPosition =  if (cameraStatus == CameraState.BACK) front() else back(),
+            cameraConfiguration = CameraConfiguration()
+        )
+
+        if(cameraStatus == CameraState.BACK) cameraStatus = CameraState.FRONT
+        else cameraStatus = CameraState.BACK
+    }
 }
 private const val LOGGING_TAG = "Fotoapparat Example"
+
+enum class CameraState{
+    FRONT, BACK
+}
 
 private sealed class Camera(
     val lensPosition: LensPositionSelector,
